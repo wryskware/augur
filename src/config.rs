@@ -172,7 +172,12 @@ pub fn default_deny_patterns() -> Vec<String> {
         r"(?i)\bdd\s+if=",
         r"(?i)\bcurl\b[^|]*\|\s*(ba|z)?sh\b",
         r"(?i)\bwget\b[^|]*\|\s*(ba|z)?sh\b",
-        r"(?i)Invoke-(WebRequest|RestMethod)[^|]*\|[^|]*Invoke-Expression",
+        // Aliases count: `irm ... | iex` is the PowerShell spelling of
+        // `curl | sh`, and nobody types the cmdlet names out in a one-liner.
+        r"(?i)\b(irm|iwr|Invoke-WebRequest|Invoke-RestMethod)\b[^|]*\|[^|]*\b(iex|Invoke-Expression)\b",
+        // Execution fed from a pipeline is the risk whatever produced the left
+        // side, so this stands on its own rather than only after a download.
+        r"(?i)\|\s*(iex|Invoke-Expression)\b",
         r"(?i)\biex\b\s*\(",
         // No lookahead in the `regex` crate, so `--force-with-lease` is excluded
         // by requiring whitespace or end-of-string right after `--force`.

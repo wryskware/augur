@@ -1,5 +1,7 @@
 # augur
 
+[![CI](https://github.com/wryskware/augur/actions/workflows/ci.yml/badge.svg)](https://github.com/wryskware/augur/actions/workflows/ci.yml)
+
 Ask your terminal a question. Get an answer, or a runnable command.
 
 ```console
@@ -13,7 +15,8 @@ $ ask list all the files under this directory recursively
   [enter] run   [e] edit   [c] copy   [n] dismiss
 ```
 
-The binary is `ask`. The project is `augur`.
+The binary is `ask`. The project is `augur`; the crates.io package is
+`augur-cli`, because `augur` and `ask` were both already taken.
 
 ## Why
 
@@ -45,6 +48,14 @@ a `find` invocation.
   `gemini`, a shell script — works through the `command` provider; see
   [Configuration](#configuration).
 
+### From crates.io
+
+```console
+cargo install augur-cli
+```
+
+(Once published. The package is `augur-cli`; the binary it installs is `ask`.)
+
 ### From GitHub
 
 ```console
@@ -59,7 +70,7 @@ cd augur
 cargo install --path .
 ```
 
-Both install a binary named **`ask`** into `~/.cargo/bin`. If that isn't on your
+All three install a binary named **`ask`** into `~/.cargo/bin`. If that isn't on your
 PATH, add it:
 
 ```console
@@ -107,7 +118,7 @@ ask completions powershell | Out-String | Invoke-Expression
 ### Uninstall
 
 ```console
-cargo uninstall augur
+cargo uninstall augur-cli
 rm -rf ~/.augur          # config and history
 ```
 
@@ -204,6 +215,10 @@ The patterns are anchored to avoid crying wolf: `rm -rf /` is caught,
 | *n* | a command ran and exited with *n* |
 | 2 | augur itself failed (bad config, provider missing, provider errored) |
 
+Under `--yes`, a command the destructive gate refuses does not run, and augur
+exits `0` — the refusal is a warning on stderr, not a failure of augur. A script
+that must know the command was withheld has to read stderr.
+
 ## Limitations
 
 - With input piped in, there is no terminal left to read a keypress from, so the
@@ -211,6 +226,12 @@ The patterns are anchored to avoid crying wolf: `rm -rf /` is caught,
 - The run menu selects among up to nine commands, since it reads one digit.
 - `codex` runs in a `read-only` sandbox: it may inspect files to ground an
   answer, never modify them. Change it under `[providers.codex] sandbox`.
+- When a schema-less provider replies in plain prose, the commands lifted out of
+  its code fences carry no model destructiveness verdict — only the local
+  `[safety].deny` list gates them.
+- Commands containing embedded double quotes may be re-parsed differently by
+  `powershell -Command` (Windows PowerShell 5.1 quoting). Use `[e]dit` to adjust
+  before running if a quoted command misbehaves.
 
 ## License
 

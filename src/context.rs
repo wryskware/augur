@@ -193,14 +193,23 @@ fn read_piped_stdin() -> Option<String> {
     if stdin.is_terminal() {
         return None;
     }
-    let mut buf = String::new();
+    let mut buf: Vec<u8> = Vec::new();
     // A binary or gigantic pipe is not worth forwarding; cap it.
-    match std::io::stdin().take(64 * 1024).read_to_string(&mut buf) {
-        Ok(0) => None,
-        Ok(_) if buf.trim().is_empty() => None,
-        Ok(_) => Some(buf),
-        Err(_) => None,
+    stdin.take(64 * 1024).read_to_end(&mut buf).ok()?;
+    piped_text(&buf)
+}
+
+/// Bytes off the pipe to the text augur forwards.
+///
+/// Lossy on purpose: the 64 KiB cap lands wherever it lands, and losing a whole
+/// build log because its tail was cut mid-character is far worse than one
+/// replacement glyph. Empty or whitespace-only input is still `None`.
+fn piped_text(bytes: &[u8]) -> Option<String> {
+    let text = String::from_utf8_lossy(bytes);
+    if text.trim().is_empty() {
+        return None;
     }
+    Some(text.into_owned())
 }
 
 #[cfg(test)]
@@ -217,6 +226,22 @@ mod tests {
         assert_eq!(Shell::parse("/usr/bin/zsh"), Some(Shell::Zsh));
         assert_eq!(Shell::parse("PowerShell.EXE"), Some(Shell::PowerShell));
         assert_eq!(Shell::parse("code"), None);
+    }
+
+    #[test]
+    fn a_pipe_cut_mid_character_keeps_the_content_it_did_get() {
+        let full = "error: naïve café ☕";
+        // Drop one byte of the trailing three-byte character, exactly what the
+        // 64 KiB cap does to a large non-ASCII log.
+        let truncated = &full.as_bytes()[..full.len() - 1];
+        let text = piped_text(truncated).expect("a split character must not discard the pipe");
+        assert!(text.starts_with("error: naïve café"), "{text}");
+    }
+
+    #[test]
+    fn empty_and_whitespace_only_pipes_stay_none() {
+        assert_eq!(piped_text(b""), None);
+        assert_eq!(piped_text(b"  \r\n\t "), None);
     }
 
     #[test]

@@ -96,6 +96,8 @@ pub fn offer(
     };
 
     loop {
+        // Built out here so the hints vec can borrow it.
+        let numeric = numeric_hint(answer.commands.len());
         let hints: Vec<(&str, &str)> = match selected {
             Some(_) if answer.commands.len() > 1 => {
                 vec![
@@ -113,7 +115,7 @@ pub fn offer(
                 ("n", "dismiss"),
             ],
             None => vec![
-                (numeric_hint(answer.commands.len()), "choose"),
+                (numeric.as_str(), "choose"),
                 ("c", "copy 1"),
                 ("n", "dismiss"),
             ],
@@ -179,9 +181,13 @@ pub fn offer(
     }
 }
 
-fn numeric_hint(count: usize) -> &'static str {
+fn numeric_hint(count: usize) -> String {
     // The menu only reads a single digit, so nine is the ceiling.
-    if count >= 9 { "1-9" } else { "1-n" }
+    if count >= 9 {
+        "1-9".to_string()
+    } else {
+        format!("1-{count}")
+    }
 }
 
 /// Returns false when the user declined. Destructive commands need a typed

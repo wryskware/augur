@@ -11,7 +11,7 @@ built.
 
 ```console
 cargo build
-cargo test                          # 31 unit + 25 integration
+cargo test                          # 36 unit + 25 integration
 cargo clippy --all-targets -- -D warnings
 cargo fmt
 ./target/debug/ask -v "..."         # -v prints the provider argv and parse tier
