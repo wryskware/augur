@@ -4,6 +4,8 @@
 
 Ask your terminal a question. Get an answer, or a runnable command.
 
+![ask answering the same question in PowerShell, bash, and nushell, then refusing to auto-run a destructive command](media/ask-demo.gif)
+
 ```console
 $ ask list all the files under this directory recursively
 
