@@ -316,7 +316,7 @@ mod tests {
     fn request(prompt: &str, schema: Option<serde_json::Value>) -> Request<'_> {
         Request {
             prompt,
-            model: "gpt-5.6-luna",
+            model: "gpt-6-luna",
             effort: Effort::High,
             schema,
         }
@@ -327,7 +327,7 @@ mod tests {
         let p = provider(ProviderKind::Codex, vec![]);
         let inv = build_codex(&p, &request("hello", None)).unwrap();
         assert_eq!(inv.args[0], "exec");
-        assert!(inv.args.windows(2).any(|w| w == ["-m", "gpt-5.6-luna"]));
+        assert!(inv.args.windows(2).any(|w| w == ["-m", "gpt-6-luna"]));
         assert!(
             inv.args
                 .contains(&"model_reasoning_effort=\"high\"".to_string())
@@ -352,7 +352,7 @@ mod tests {
     fn command_template_substitutes_and_inlines_the_prompt() {
         let p = provider(ProviderKind::Command, vec!["run", "{model}", "{prompt}"]);
         let inv = build_command(&p, &request("why is the sky blue", None)).unwrap();
-        assert_eq!(inv.args, vec!["run", "gpt-5.6-luna", "why is the sky blue"]);
+        assert_eq!(inv.args, vec!["run", "gpt-6-luna", "why is the sky blue"]);
         assert!(
             inv.stdin.is_none(),
             "an inlined prompt must not also go to stdin"
@@ -385,7 +385,7 @@ mod tests {
         assert!(
             inv.args
                 .windows(2)
-                .any(|w| w == ["--model", "gpt-5.6-luna"])
+                .any(|w| w == ["--model", "gpt-6-luna"])
         );
         assert_eq!(inv.stdin.as_deref(), Some("q"));
     }

@@ -16,7 +16,7 @@ pub const CONFIG_FILE: &str = "config.toml";
 pub const HISTORY_FILE: &str = "history.jsonl";
 
 pub const BUILTIN_PROVIDER: &str = "codex";
-pub const BUILTIN_MODEL: &str = "gpt-5.6-luna";
+pub const BUILTIN_MODEL: &str = "gpt-6-luna";
 pub const BUILTIN_EFFORT: Effort = Effort::High;
 
 // ---------------------------------------------------------------------------
@@ -595,7 +595,7 @@ pub const STARTER_CONFIG: &str = r##"# augur — configuration for the `ask` com
 provider = "codex"
 
 [defaults]
-model  = "gpt-5.6-luna"
+model  = "gpt-6-luna"
 effort = "high"          # minimal | low | medium | high | xhigh
 
 [ui]
@@ -656,6 +656,6 @@ command = "claude"
 
 [profiles.quick]
 provider = "codex"
-model    = "gpt-5.6-luna"
+model    = "gpt-6-luna"
 effort   = "low"
 "##;

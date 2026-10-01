@@ -96,7 +96,7 @@ The first run creates a fully commented `~/.augur/config.toml`. Point it at the
 model you want:
 
 ```console
-ask config set model gpt-5.6-luna
+ask config set model gpt-6-luna
 ask config set effort high
 ask config set provider codex
 ```
@@ -162,7 +162,7 @@ ask -- --force-with-lease, what does it actually protect against
 
 ```console
 ask config path | show | edit | init
-ask config set <key> <value>     # ask config set model gpt-5.6-luna
+ask config set <key> <value>     # ask config set model gpt-6-luna
 ask config get <key>
 ask providers
 ask last [--run]
